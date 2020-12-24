@@ -1,0 +1,10 @@
+D:\Projects\8_laba_OOP\8_laba_OOP\bin\Debug\7_laba_OOP.exe.config
+D:\Projects\8_laba_OOP\8_laba_OOP\bin\Debug\7_laba_OOP.exe
+D:\Projects\8_laba_OOP\8_laba_OOP\bin\Debug\7_laba_OOP.pdb
+D:\Projects\8_laba_OOP\8_laba_OOP\obj\Debug\8_laba_OOP.csprojAssemblyReference.cache
+D:\Projects\8_laba_OOP\8_laba_OOP\obj\Debug\_8_laba_OOP.laba8.resources
+D:\Projects\8_laba_OOP\8_laba_OOP\obj\Debug\_7_laba_OOP.Properties.Resources.resources
+D:\Projects\8_laba_OOP\8_laba_OOP\obj\Debug\8_laba_OOP.csproj.GenerateResource.cache
+D:\Projects\8_laba_OOP\8_laba_OOP\obj\Debug\8_laba_OOP.csproj.CoreCompileInputs.cache
+D:\Projects\8_laba_OOP\8_laba_OOP\obj\Debug\7_laba_OOP.exe
+D:\Projects\8_laba_OOP\8_laba_OOP\obj\Debug\7_laba_OOP.pdb
