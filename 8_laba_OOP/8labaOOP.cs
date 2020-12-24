@@ -449,7 +449,7 @@ namespace _8_laba_OOP
 
 		TreeViews tree = new TreeViews();
 		int p = 0; // Нажат ли был ранее Ctrl
-		static int k = 20; // Кол-во ячеек в хранилище
+		static int k = 5; // Кол-во ячеек в хранилище
 		Storage storag = new Storage(k); // Создаем объект хранилища
 		static int index = 0; // Кол-во нарисованных фигур
 		static int indexin = 0; // Индекс, в какое место была помещена фигура
@@ -551,17 +551,28 @@ namespace _8_laba_OOP
 			public void Update(ref TreeView treeView, Storage stg)
 			{
 				treeView.Nodes.Clear();
+				treeView.Nodes.Add("Фигуры");
 				for(int i = 0; i < k; ++i)
                 {
 					if (!stg.check_empty(i))
 					{
-						treeView.Nodes.Add(stg.objects[i].name());
+						fillnode(treeView.Nodes[0], stg.objects[i]);
 					}
                 }
-				//treeView.Nodes.Add();
-				//treeView.Nodes[0].Nodes.Add("Child 1");
-
+				treeView.ExpandAll();			
 			}
+			public void fillnode(TreeNode treeNode, Figure figure)
+            {
+				TreeNode nodes = treeNode.Nodes.Add(figure.name());
+				if(figure.name() == "Group")
+                {
+					for(int i = 0; i < (figure as Group).count; ++i)
+                    {
+						fillnode(nodes, (figure as Group).group[i]);
+                    }
+                }
+            }
+			
 		}
 		private void panel_drawing_MouseClick(object sender, MouseEventArgs e)
 		{
