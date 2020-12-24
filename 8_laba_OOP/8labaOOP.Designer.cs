@@ -248,6 +248,7 @@
             treeNode1});
             this.treeView1.Size = new System.Drawing.Size(205, 543);
             this.treeView1.TabIndex = 7;
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
             // laba8
             // 

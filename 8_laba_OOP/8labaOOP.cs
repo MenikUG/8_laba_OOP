@@ -41,7 +41,7 @@ namespace _8_laba_OOP
 			public virtual void get_max_x(ref int f) { }
 			public virtual void get_min_y(ref int f) { }
 			public virtual void get_max_y(ref int f) { }
-			public virtual string name() { return ""; }
+			public virtual string name() { return "null"; }
 
 		}
 		class Group : Figure
@@ -449,7 +449,7 @@ namespace _8_laba_OOP
 
 		TreeViews tree = new TreeViews();
 		int p = 0; // Нажат ли был ранее Ctrl
-		static int k = 5; // Кол-во ячеек в хранилище
+		static int k = 15; // Кол-во ячеек в хранилище
 		Storage storag = new Storage(k); // Создаем объект хранилища
 		static int index = 0; // Кол-во нарисованных фигур
 		static int indexin = 0; // Индекс, в какое место была помещена фигура
@@ -496,6 +496,7 @@ namespace _8_laba_OOP
 				}
 				objects[ind] = object1;
 				indexin = ind;
+				sorting(k);
 				NotifyObservers();
 			}
 			public void delete_object(int ind)
@@ -540,9 +541,25 @@ namespace _8_laba_OOP
 				observers.Remove(o);
 			}
 			public void NotifyObservers()
-			{
+			{				
 				foreach (IObserver observer in observers)
 					observer.Update(ref treeView, this);
+			}
+			public void sorting(int size)
+            {
+				Storage storage1 = new Storage(size);
+				int col = 0;
+				for (int i = 0; i < size; ++i)
+				{
+					if (!check_empty(i)) 
+					{
+						storage1.objects[col] = objects[i];
+						++col;
+					}
+				}
+				initialisat(size);
+				for (int i = 0; i < size; ++i)
+					objects[i] = storage1.objects[i];
 			}
 		}
 		class TreeViews : IObserver
@@ -560,6 +577,11 @@ namespace _8_laba_OOP
 					}
                 }
 				treeView.ExpandAll();			
+			}
+			public void treeSelect(ref TreeView treeView, int index) //выбор узла
+			{
+				treeView.SelectedNode = treeView.Nodes[0].Nodes[index];
+				treeView.Focus();
 			}
 			public void fillnode(TreeNode treeNode, Figure figure)
             {
@@ -596,6 +618,7 @@ namespace _8_laba_OOP
 					// Снимаем выделение у всех объектов хранилища
 					remove_selection_circle(ref storag);
 					paint_figure(Color.Red, 4, ref storag, c);
+					tree.treeSelect(ref treeView1, c);
 				}
 				return;
 			}
@@ -860,5 +883,19 @@ namespace _8_laba_OOP
 				sr.Close();
 			}
 		}
-	}
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+			remove_selection_circle(ref storag);
+            int g;
+            if (e.Node.Level != 1)
+            {
+                g = e.Node.Parent.Index;
+            }
+            else
+            {
+                g = e.Node.Index;
+            }
+            paint_figure(Color.Red, 4, ref storag, g);
+        }
+    }
 }
