@@ -15,11 +15,12 @@ namespace _8_laba_OOP
 	{
 		public laba8()
 		{
-			InitializeComponent();			
+			InitializeComponent();
+			storag.AddObserver(tree);
 		}
 
 		public class Figure
-		{	// Composite
+		{   // Composite
 			public int x, y;
 			public Color color = Color.Navy;
 			public Color fillcolor;
@@ -34,15 +35,21 @@ namespace _8_laba_OOP
 			public virtual void move_y(int y, Panel panel_drawing) { }
 			public virtual void changesize(int size) { }
 			public virtual bool checkfigure(int x, int y) { return false; }
-			public virtual void setcolor(Color color) {	}
+			public virtual void setcolor(Color color) { }
 			public virtual void caseswitch(ref StreamReader sr, ref Figure figure, CreateFigure createFigure) { }
+			public virtual void get_min_x(ref int f) { }
+			public virtual void get_max_x(ref int f) { }
+			public virtual void get_min_y(ref int f) { }
+			public virtual void get_max_y(ref int f) { }
+			public virtual string name() { return ""; }
 
 		}
 		class Group : Figure
-		{	// Группа
+		{   // Группа
 			public int maxcount = 10;
 			public Figure[] group;
 			public int count;
+			int min_x = 99999, max_x = 0, min_y = 99999, max_y = 0;
 			public Group()
 			{   // Выделяем maxcount мест в хранилище
 				count = 0;
@@ -51,14 +58,14 @@ namespace _8_laba_OOP
 					group[i] = null;
 			}
 			public override string save()
-			{	// Функция сохранения
+			{   // Функция сохранения
 				string str = "Group" + "\n" + count;
 				for (int i = 0; i < count; ++i)
 					str += "\n" + group[i].save();
 				return str;
 			}
 			public override void load(ref StreamReader sr, Figure figure, CreateFigure createFigure)
-			{	// Функция загрузки
+			{   // Функция загрузки
 				int chislo = Convert.ToInt32(sr.ReadLine());
 				for (int i = 0; i < chislo; ++i)
 				{
@@ -67,39 +74,83 @@ namespace _8_laba_OOP
 				}
 			}
 			public override void GroupAddFigure(ref Figure object1)
-			{	// Добавляет фигуру в группу
+			{   // Добавляет фигуру в группу
 				if (count >= maxcount)
 					return;
 				group[count] = object1;
 				++count;
 			}
 			public override void UnGroup(ref Storage stg, int c)
-			{	// Разгруппировка
+			{   // Разгруппировка
 				stg.delete_object(c);
-				for(int i = 0; i < count; ++i)
+				for (int i = 0; i < count; ++i)
 				{
 					stg.add_object(index, ref group[i], k, ref indexin);
 				}
 			}
 			public override void paint_figure(Pen pen, Panel panel_drawing)
-			{	// Отображение группы
-				for(int i = 0; i < count; ++i)
+			{   // Отображение группы
+				for (int i = 0; i < count; ++i)
 				{
 					group[i].paint_figure(pen, panel_drawing);
 				}
 			}
-			public override void move_x(int x, Panel panel_drawing)
-			{   // Перемещение по оси x
+			public void getsize()
+			{
+				min_x = 99999; max_x = 0; min_y = 99999; max_y = 0;
 				for (int i = 0; i < count; ++i)
 				{
-					group[i].move_x(x, panel_drawing);
+					int f = 0;
+					group[i].get_min_x(ref f);
+					if (f < min_x)
+						min_x = f;
+					group[i].get_max_x(ref f);
+					if (f > max_x)
+						max_x = f;
+					group[i].get_min_y(ref f);
+					if (f < min_y)
+						min_y = f;
+					group[i].get_max_y(ref f);
+					if (f > max_y)
+						max_y = f;
 				}
+			}
+			public override void move_x(int x, Panel panel_drawing)
+			{   // Перемещение по оси x
+				getsize();
+				if ((min_x + x) > 0 && (max_x + x) < panel_drawing.ClientSize.Width)
+				{
+					for (int i = 0; i < count; ++i)
+					{
+						group[i].move_x(x, panel_drawing);
+					}
+				}
+			}
+			public override void get_min_x(ref int f)
+			{
+				f = min_x;
+			}
+			public override void get_max_x(ref int f)
+			{
+				f = max_x;
+			}
+			public override void get_min_y(ref int f)
+			{
+				f = min_y;
+			}
+			public override void get_max_y(ref int f)
+			{
+				f = max_y;
 			}
 			public override void move_y(int y, Panel panel_drawing)
 			{   // Перемещение по оси y
-				for (int i = 0; i < count; ++i)
+				getsize();
+				if ((min_y + y) > 0 && (max_y + y) < panel_drawing.ClientSize.Height)
 				{
-					group[i].move_y(y, panel_drawing);
+					for (int i = 0; i < count; ++i)
+					{
+						group[i].move_y(y, panel_drawing);
+					}
 				}
 			}
 			public override void changesize(int size)
@@ -110,24 +161,28 @@ namespace _8_laba_OOP
 				}
 			}
 			public override bool checkfigure(int x, int y)
-			{	// Проверка на фигуры
-				for(int i = 0; i < count; ++i)
+			{   // Проверка на фигуры
+				for (int i = 0; i < count; ++i)
 				{
-					if(group[i].checkfigure(x, y))
+					if (group[i].checkfigure(x, y))
 						return true;
 				}
 				return false;
 			}
 			public override void setcolor(Color color)
-			{	// Установка цвета
-				for(int i = 0; i < count; ++i)
-                {
+			{   // Установка цвета
+				for (int i = 0; i < count; ++i)
+				{
 					group[i].setcolor(color);
-                }
+				}
 			}
+            public override string name()
+            {
+                return "Group";
+            }
 
-		}
-		class Circle: Figure
+        }
+		class Circle : Figure
 		{
 			public int rad; // Радиус круга
 			public Circle() { }
@@ -138,11 +193,11 @@ namespace _8_laba_OOP
 				this.y = y - rad;
 			}
 			public override string save()
-			{	// Функция сохранения
-				return "Circle" + "\n" + x + "\n" + y + "\n" + rad + "\n" + fillcolor.ToArgb().ToString();				
+			{   // Функция сохранения
+				return "Circle" + "\n" + x + "\n" + y + "\n" + rad + "\n" + fillcolor.ToArgb().ToString();
 			}
 			public override void load(string x, string y, string rad, string fillcolor)
-			{	// Функция загрузки
+			{   // Функция загрузки
 				this.x = Convert.ToInt32(x);
 				this.y = Convert.ToInt32(y);
 				this.rad = Convert.ToInt32(rad);
@@ -156,8 +211,24 @@ namespace _8_laba_OOP
 				panel_drawing.CreateGraphics().FillEllipse(
 					figurefillcolor, x, y, rad * 2, rad * 2);
 			}
+			public override void get_min_x(ref int f)
+			{
+				f = x;
+			}
+			public override void get_max_x(ref int f)
+			{
+				f = x + (rad * 2);
+			}
+			public override void get_min_y(ref int f)
+			{
+				f = y;
+			}
+			public override void get_max_y(ref int f)
+			{
+				f = y + (rad * 2);
+			}
 			public override void move_x(int x, Panel panel_drawing)
-			{	// Перемещение по оси x
+			{   // Перемещение по оси x
 				int c = this.x + x;
 				int gran = panel_drawing.ClientSize.Width - (rad * 2);
 				check(c, x, gran, gran - 2, ref this.x);
@@ -181,15 +252,19 @@ namespace _8_laba_OOP
 			{   // Установка цвета
 				fillcolor = color;
 			}
+			public override string name()
+			{
+				return "Circle";
+			}
 		}
-		class Line: Figure
+		class Line : Figure
 		{
 			public int lenght = 60;
 			public int wight = 10;
 			public Line() { }
 			public Line(int x, int y)
 			{
-				this.x = x - lenght/2;
+				this.x = x - lenght / 2;
 				this.y = y;
 			}
 			public override string save()
@@ -210,6 +285,22 @@ namespace _8_laba_OOP
 										y, lenght, wight);
 				panel_drawing.CreateGraphics().FillRectangle(figurefillcolor, x,
 					y, lenght, wight);
+			}
+			public override void get_min_x(ref int f)
+			{
+				f = x;
+			}
+			public override void get_max_x(ref int f)
+			{
+				f = x + lenght;
+			}
+			public override void get_min_y(ref int f)
+			{
+				f = y;
+			}
+			public override void get_max_y(ref int f)
+			{
+				f = y + wight;
 			}
 			public override void move_x(int x, Panel panel_drawing)
 			{   // Перемещение по оси x
@@ -236,15 +327,19 @@ namespace _8_laba_OOP
 			{   // Установка цвета
 				fillcolor = color;
 			}
+			public override string name()
+			{
+				return "Line";
+			}
 		}
-		class Square: Figure
+		class Square : Figure
 		{
 			public int size = 60;
 			public Square() { }
 			public Square(int x, int y)
 			{
-				this.x = x - size/2;
-				this.y = y - size/2;
+				this.x = x - size / 2;
+				this.y = y - size / 2;
 			}
 			public override string save()
 			{   // Функция сохранения
@@ -264,6 +359,22 @@ namespace _8_laba_OOP
 					x, y, size, size);
 				panel_drawing.CreateGraphics().FillRectangle(figurefillcolor,
 					x, y, size, size);
+			}
+			public override void get_min_x(ref int f)
+			{
+				f = x;
+			}
+			public override void get_max_x(ref int f)
+			{
+				f = x + size;
+			}
+			public override void get_min_y(ref int f)
+			{
+				f = y;
+			}
+			public override void get_max_y(ref int f)
+			{
+				f = y + size;
 			}
 			public override void move_x(int x, Panel panel_drawing)
 			{   // Перемещение по оси x
@@ -290,11 +401,15 @@ namespace _8_laba_OOP
 			{   // Установка цвета
 				fillcolor = color;
 			}
+			public override string name()
+			{
+				return "Square";
+			}
 		}
-		public class CreateFigure: Figure
-        {	// Используем Factory Method
+		public class CreateFigure : Figure
+		{   // Используем Factory Method
 			public override void caseswitch(ref StreamReader sr, ref Figure figure, CreateFigure createFigure)
-            {				
+			{
 				string str = sr.ReadLine();
 				switch (str)
 				{   // В зависимости какая фигура выбрана
@@ -316,7 +431,7 @@ namespace _8_laba_OOP
 						break;
 				}
 			}
-        }
+		}
 
 		static public void check(int f, int chislo, int gran, int gran1, ref int x)
 		{   // Проверка на выход фигуры за границы
@@ -332,21 +447,39 @@ namespace _8_laba_OOP
 			}
 		}
 
+		TreeViews tree = new TreeViews();
 		int p = 0; // Нажат ли был ранее Ctrl
-		static int k = 10; // Кол-во ячеек в хранилище
+		static int k = 20; // Кол-во ячеек в хранилище
 		Storage storag = new Storage(k); // Создаем объект хранилища
 		static int index = 0; // Кол-во нарисованных фигур
 		static int indexin = 0; // Индекс, в какое место была помещена фигура
-		int figure_now = 1; // Какая фигура выбрана
-
-		public class Storage
+		int figure_now = 1; // Какая фигура выбрана		
+		public interface IObservable
+		{   // Наблюдаемый объект
+			void AddObserver(IObserver o);
+			void RemoveObserver(IObserver o);
+			void NotifyObservers();
+		}
+		public interface IObserver
+		{   // Наблюдатель
+			void Update(ref TreeView treeView, Storage stg);
+		}
+		public class Storage: IObservable
 		{
 			public Figure[] objects;
+			public TreeView treeView;
+			public List<IObserver> observers;
+			public Storage() { }
 			public Storage(int count)
 			{   // Выделяем count мест в хранилище
 				objects = new Figure[count];
+				observers = new List<IObserver>();
 				for (int i = 0; i < count; ++i)
 					objects[i] = null;
+			}
+			public void intit_tree(ref TreeView treeView)
+            {
+				this.treeView = treeView;
 			}
 			public void initialisat(int count)
 			{   // Выделяем count мест в хранилище
@@ -363,12 +496,14 @@ namespace _8_laba_OOP
 				}
 				objects[ind] = object1;
 				indexin = ind;
+				NotifyObservers();
 			}
 			public void delete_object(int ind)
 			{   // Удаляет объект из хранилища
 				objects[ind] = null;
 				if (index > 0)
 					index--;
+				NotifyObservers();
 			}
 			public bool check_empty(int index)
 			{   // Проверяет занято ли место хранилище
@@ -395,13 +530,44 @@ namespace _8_laba_OOP
 				initialisat(size);
 				for (int i = 0; i < size; ++i)
 					objects[i] = storage1.objects[i];
+			}			
+			public void AddObserver(IObserver o)
+			{
+				observers.Add(o);
 			}
-			~Storage() { }
-		};
+			public void RemoveObserver(IObserver o)
+			{
+				observers.Remove(o);
+			}
+			public void NotifyObservers()
+			{
+				foreach (IObserver observer in observers)
+					observer.Update(ref treeView, this);
+			}
+		}
+		class TreeViews : IObserver
+		{
+			public TreeViews() { }
+			public void Update(ref TreeView treeView, Storage stg)
+			{
+				treeView.Nodes.Clear();
+				for(int i = 0; i < k; ++i)
+                {
+					if (!stg.check_empty(i))
+					{
+						treeView.Nodes.Add(stg.objects[i].name());
+					}
+                }
+				//treeView.Nodes.Add();
+				//treeView.Nodes[0].Nodes.Add("Child 1");
+
+			}
+		}
 		private void panel_drawing_MouseClick(object sender, MouseEventArgs e)
 		{
 			//Проверка на наличие фигуры на данных координатах
 			int c = check_figure(ref storag, k, e.X, e.Y);
+			storag.intit_tree(ref treeView1);
 			if (c != -1)
 			{   // Если на этом месте уже нарисована фигура
 				if (Control.ModifierKeys == Keys.Control)
@@ -417,7 +583,7 @@ namespace _8_laba_OOP
 				else
 				{   // Иначе выделяем только один объект
 					// Снимаем выделение у всех объектов хранилища
-					remove_selection_circle(ref storag); 
+					remove_selection_circle(ref storag);
 					paint_figure(Color.Red, 4, ref storag, c);
 				}
 				return;
@@ -459,12 +625,12 @@ namespace _8_laba_OOP
 			}
 		}
 		private void move_y(ref Storage stg, int y)
-		{	// Функция для перемещения фигур по оси Y
-			for(int i = 0; i < k; ++i)
+		{   // Функция для перемещения фигур по оси Y
+			for (int i = 0; i < k; ++i)
 			{
 				if (!stg.check_empty(i))
 				{
-					if(stg.objects[i].color == Color.Red)
+					if (stg.objects[i].color == Color.Red)
 					{   // Если объект выделен
 						stg.objects[i].move_y(y, panel_drawing);
 					}
@@ -485,7 +651,7 @@ namespace _8_laba_OOP
 			}
 		}
 		private void changesize(ref Storage stg, int size)
-		{	// Увеличивает или уменьшает размер фигур, в зависимости от size
+		{   // Увеличивает или уменьшает размер фигур, в зависимости от size
 			for (int i = 0; i < k; ++i)
 			{
 				if (!stg.check_empty(i))
@@ -526,11 +692,11 @@ namespace _8_laba_OOP
 			{
 				Pen pen = new Pen(name, size);
 				stg.objects[index].color = name;
-				stg.objects[index].paint_figure(pen, panel_drawing);                
+				stg.objects[index].paint_figure(pen, panel_drawing);
 			}
 		}
 		private void paint_all(ref Storage stg)
-		{	// Рисует все фигуры на панели
+		{   // Рисует все фигуры на панели
 			for (int i = 0; i < k; ++i)
 				if (!stg.check_empty(i))
 					paint_figure(stg.objects[i].color, 4, ref storag, i);
@@ -544,7 +710,7 @@ namespace _8_laba_OOP
 					if (!stg.check_empty(i))
 					{   // Если под i индексом в хранилище есть объект
 						if (stg.objects[i].checkfigure(x, y))
-							return i;					   
+							return i;
 					}
 				}
 			}
@@ -554,7 +720,7 @@ namespace _8_laba_OOP
 		{
 			drawline.Checked = false;
 			drawsquare.Checked = false;
-			figure_now = 1;			
+			figure_now = 1;
 			if (drawellipse.Checked == false) // Если не выбрана фигура
 				figure_now = 0;
 		}
@@ -576,20 +742,20 @@ namespace _8_laba_OOP
 		}
 		private void laba8_KeyDown(object sender, KeyEventArgs e)
 		{
-			if(e.KeyCode == Keys.Delete)
+			if (e.KeyCode == Keys.Delete)
 			{   // Удаление выделенных фигур, если нажата кнопка delete
 				remove_selected_circle(ref storag);
 			}
-			if(e.KeyCode == Keys.W)
-			{	// Перемещение по оси X вверх
+			if (e.KeyCode == Keys.W)
+			{   // Перемещение по оси X вверх
 				move_y(ref storag, -10);
 			}
 			if (e.KeyCode == Keys.S)
-			{	// Перемещение по оси X вниз
+			{   // Перемещение по оси X вниз
 				move_y(ref storag, +10);
 			}
 			if (e.KeyCode == Keys.A)
-			{	// Перемещение по оси Y вниз
+			{   // Перемещение по оси Y вниз
 				move_x(ref storag, -10);
 			}
 			if (e.KeyCode == Keys.D)
@@ -597,18 +763,18 @@ namespace _8_laba_OOP
 				move_x(ref storag, +10);
 			}
 			if (e.KeyCode == Keys.Oemplus)
-			{	// Увеличиваем размер фигуры
+			{   // Увеличиваем размер фигуры
 				changesize(ref storag, 10);
 			}
 			if (e.KeyCode == Keys.OemMinus)
-			{	// Уменьшаем размер фигуры
+			{   // Уменьшаем размер фигуры
 				changesize(ref storag, -10);
 			}
 			panel_drawing.Refresh();
 			paint_all(ref storag);
 		}
 		private void btn_select_color_Click(object sender, EventArgs e)
-		{	// Смена цвета у фигур
+		{   // Смена цвета у фигур
 			if (colorDialog1.ShowDialog() == DialogResult.Cancel)
 				return;
 			btn_select_color.BackColor = colorDialog1.Color;
@@ -623,7 +789,7 @@ namespace _8_laba_OOP
 			}
 		}
 		private void btn_group_Click(object sender, EventArgs e)
-		{	// Создаём группу из выделенных фигур
+		{   // Создаём группу из выделенных фигур
 			Figure group = new Group();
 			for (int i = 0; i < k; ++i)
 			{
@@ -637,7 +803,7 @@ namespace _8_laba_OOP
 			storag.add_object(index, ref group, k, ref indexin);
 		}
 		private void btn_ungroup_Click(object sender, EventArgs e)
-		{	// Разгруппировка группы
+		{   // Разгруппировка группы
 			for (int i = 0; i < k; ++i)
 			{
 				if (!storag.check_empty(i))
@@ -648,13 +814,13 @@ namespace _8_laba_OOP
 					}
 			}
 		}
-		string path = @"D:\Projects\8_laba_OOP\8_laba_OOP\File.txt";
+		string path = @"D:\Projects\7_laba_OOP\7_laba_OOP\File.txt";
 		private void btn_save_Click(object sender, EventArgs e)
-		{	// Сохраяем хранилище в файл
+		{   // Сохраяем хранилище в файл
 			using (StreamWriter sw = new StreamWriter(path, false, System.Text.Encoding.Default))
 			{
 				sw.WriteLine(storag.occupied(k));
-				for(int i = 0; i < k; ++i)
+				for (int i = 0; i < k; ++i)
 				{
 					if (!storag.check_empty(i))
 					{
@@ -664,7 +830,7 @@ namespace _8_laba_OOP
 			}
 		}
 		private void btn_load_Click(object sender, EventArgs e)
-		{	// Загружаем данные из файла
+		{   // Загружаем данные из файла
 			StreamReader sr = new StreamReader(path, System.Text.Encoding.Default);
 			{
 				string str = sr.ReadLine();
@@ -675,7 +841,7 @@ namespace _8_laba_OOP
 					CreateFigure create = new CreateFigure();
 					create.caseswitch(ref sr, ref figure, create);
 					if (index == k)
-						storag.doubleSize(ref k); 
+						storag.doubleSize(ref k);
 					storag.add_object(index, ref figure, k, ref indexin);
 					++index;
 				}
