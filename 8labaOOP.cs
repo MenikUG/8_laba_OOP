@@ -21,7 +21,7 @@ namespace _8_laba_OOP
 
 		public class Figure
 		{   // Composite
-			public int x, y, rad, lenght,size;
+			public int x, y;
 			public Color color = Color.Navy;
 			public Color fillcolor;
 			public bool is_sticky = false;
@@ -178,19 +178,18 @@ namespace _8_laba_OOP
 					group[i].setcolor(color);
 				}
 			}
-			public override string name()
-			{
-				return "Group";
-			}
+            public override string name()
+            {
+                return "Group";
+            }
 
-		}
+        }
 		class Circle : Figure
 		{
-			//public int rad; // Радиус круга
+			public int rad; // Радиус круга
 			public Circle() { }
 			public Circle(int x, int y, int rad)
 			{
-				size = rad * 2;
 				this.rad = rad;
 				this.x = x - rad;
 				this.y = y - rad;
@@ -245,8 +244,6 @@ namespace _8_laba_OOP
 			public override void changesize(int size)
 			{   // Изменение размера
 				rad += size;
-				this.size = rad * 2;
-
 			}
 			public override bool checkfigure(int x, int y)
 			{   // Проверка на фигуры
@@ -261,19 +258,18 @@ namespace _8_laba_OOP
 			{
 				return "Circle";
 			}
-			public override void setcolored(Color color)
-			{
+            public override void setcolored(Color color)
+            {
 				this.color = color;				
 			}
-		}
+        }
 		class Line : Figure
 		{
+			public int lenght = 60;
 			public int wight = 10;
 			public Line() { }
 			public Line(int x, int y)
 			{
-				lenght = 60;
-				size = lenght;
 				this.x = x - lenght / 2;
 				this.y = y;
 			}
@@ -327,7 +323,6 @@ namespace _8_laba_OOP
 			public override void changesize(int size)
 			{   // Изменение размера
 				lenght += size;
-				size += size;
 			}
 			public override bool checkfigure(int x, int y)
 			{   // Проверка на фигуры
@@ -342,18 +337,13 @@ namespace _8_laba_OOP
 			{
 				return "Line";
 			}
-			public override void setcolored(Color color)
-			{
-				this.color = color;
-			}
 		}
 		class Square : Figure
 		{
+			public int size = 60;
 			public Square() { }
 			public Square(int x, int y)
 			{
-				size = 60;
-				rad = size;
 				this.x = x - size / 2;
 				this.y = y - size / 2;
 			}
@@ -407,7 +397,6 @@ namespace _8_laba_OOP
 			public override void changesize(int size)
 			{   // Изменение размера
 				this.size += size;
-				rad += size;
 			}
 			public override bool checkfigure(int x, int y)
 			{   // Проверка на фигуры
@@ -421,10 +410,6 @@ namespace _8_laba_OOP
 			public override string name()
 			{
 				return "Square";
-			}
-			public override void setcolored(Color color)
-			{
-				this.color = color;
 			}
 		}
 		public class CreateFigure : Figure
@@ -499,7 +484,7 @@ namespace _8_laba_OOP
 					objects[i] = null;
 			}
 			public void intit_tree(ref TreeView treeView)
-			{
+            {
 				this.treeView = treeView;
 			}
 			public void initialisat(int count)
@@ -528,7 +513,7 @@ namespace _8_laba_OOP
 				NotifyObservers();
 			}
 			public bool check_empty(int index)
-			{   // Проверяет занято ли место хранилище				
+			{   // Проверяет занято ли место хранилище
 				if (objects[index] == null)
 					return true;
 				else return false;
@@ -567,7 +552,7 @@ namespace _8_laba_OOP
 					observer.Update(ref treeView, this);
 			}
 			public void sorting(int size)
-			{
+            {
 				Storage storage1 = new Storage(size);
 				int col = 0;
 				for (int i = 0; i < size; ++i)
@@ -591,12 +576,12 @@ namespace _8_laba_OOP
 				treeView.Nodes.Clear();
 				treeView.Nodes.Add("Фигуры");
 				for(int i = 0; i < k; ++i)
-				{
+                {
 					if (!stg.check_empty(i))
 					{
 						fillnode(treeView.Nodes[0], stg.objects[i]);
 					}
-				}
+                }
 				treeView.ExpandAll();			
 			}
 			public void treeSelect(ref TreeView treeView, int index) //выбор узла
@@ -605,136 +590,55 @@ namespace _8_laba_OOP
 				treeView.Focus();
 			}
 			public void fillnode(TreeNode treeNode, Figure figure)
-			{	// Заполняем treeView
+            {	// Заполняем treeView
 				TreeNode nodes = treeNode.Nodes.Add(figure.name());
 				if(figure.name() == "Group")
-				{
+                {
 					for(int i = 0; i < (figure as Group).count; ++i)
-					{
+                    {
 						fillnode(nodes, (figure as Group).group[i]);
-					}
-				}
-			}
+                    }
+                }
+            }
 			
 		}
 		class Sticky: IObserver
 		{
 			public Sticky() { }
-			public bool checkCircle(Storage stg, int i, int j)
-			{
-				if ((stg.objects[j].x - stg.objects[i].x) * (stg.objects[j].x - stg.objects[i].x) +
-					(stg.objects[j].y - stg.objects[i].y) * (stg.objects[j].y - stg.objects[i].y)
-					<= (stg.objects[i].rad + stg.objects[j].rad) * (stg.objects[i].rad + stg.objects[j].rad) + 1)
-					return true;
-				else return false;
-			}
-			public bool checkLine(Storage stg, int i, int j)
-            {
-				if (stg.objects[i].x + stg.objects[i].lenght >= stg.objects[j].x - stg.objects[j].lenght
-					&& stg.objects[i].x - stg.objects[i].lenght <= stg.objects[j].x + stg.objects[j].lenght
-					&& stg.objects[i].y >= stg.objects[j].y - 10
-					&& stg.objects[i].y <= stg.objects[j].y + 10)
-					return true;
-				else return false;
-			}
-			public bool checkSquare(Storage stg, int i, int j)
-			{
-				if (stg.objects[i].x + (stg.objects[i].size / 2) >= stg.objects[j].x - (stg.objects[j].size / 2)
-					&& stg.objects[i].x - (stg.objects[i].size / 2) <= stg.objects[j].x + (stg.objects[j].size / 2)
-					&& stg.objects[i].y >= stg.objects[j].y - (stg.objects[j].size )
-					&& stg.objects[i].y <= stg.objects[j].y + (stg.objects[j].size ))
-					return true;
-				else return false;
-			}
-
-			public bool FigureCheck(Storage stg, int i, int j, string b, int d)
-            {
-				string h;
-				if(d == 1)
-                {
-					h = b;
-                }
-				else h = stg.objects[j].name();			
-					switch (h)
-					{
-						case "Circle":
-							if (checkCircle(stg, i, j))
-								return true;
-							break;
-
-						case "Line":
-							if (checkLine(stg, i, j))
-								return true;
-							break;
-
-						case "Square":
-							if (checkSquare(stg, i, j))
-								return true;
-							break;
-						case "Group":
-							for (int v = 0; v < (stg.objects[j] as Group).count; ++v)
-                            {
-								string l = (stg.objects[j] as Group).name();
-								if (FigureCheck(stg, i, v, l, 1))
-									return true;
-							}
-							break;
-						case null:
-							return false;
-
-
-							//case "<>":
-							//	for (int i = 0; i < (storageObj as GroupFigures).count; i++)
-							//	{
-							//		string name1 = (storageObj as GroupFigures).group[i].save();
-							//		name1 = name1.Remove(name1.IndexOf('\n'), name1.Length - name1.IndexOf('\n'));
-
-							//		if (FigureCheck(obj, (storageObj as GroupFigures).group[i], name1))
-							//		{
-							//			storageCopy.getobj().setColor(Color.Orange);
-							//			return true;
-							//		}
-							//		else
-							//			return false;
-							//	}
-							//	break;
-					
-				}
-				return false;
-				
-			}
+			
 			public void Update(ref TreeView treeView, Storage stg) 
 			{
 				int p = 0;
 				for(int i = 0; i < k; ++i)
-				{
-					if (!stg.check_empty(i))
-					{
+                {
+                    if (!stg.check_empty(i))
+                    {
 						if (stg.objects[i].is_sticky == true)
 						{
 							p = i;
 							break;
 						}
-					}
-				}
+                    }
+                }
+				int x = stg.objects[p].x;
+				int y = stg.objects[p].y;
 				for(int i = 0; i < k; ++i)
-				{
+                {
 					if (!stg.check_empty(i))
 					{
 						if (p == i)
 						{
 							continue;
 						}
-						string f = "";
-						if (FigureCheck(stg, p, i, f, 0))
+						if (stg.objects[i].checkfigure(x, y))
 						{
-							stg.objects[i].setcolored(Color.Red);
+
 						}
 					}
 				}
 			}
 
-		}
+        }
 
 		private void panel_drawing_MouseClick(object sender, MouseEventArgs e)
 		{
@@ -747,17 +651,17 @@ namespace _8_laba_OOP
 				{   // Если нажат ctrl, то выделяем несколько объектов
 					if (p == 0)
 					{
-						paint_figure(Color.Navy, 4, indexin);
+						paint_figure(Color.Navy, 4, ref storag, indexin);
 						p = 1;
 					}
 					// Вызываем функцию отрисовки фигуры  
-					paint_figure(Color.Red, 4, c);
+					paint_figure(Color.Red, 4, ref storag, c);
 				}
 				else
 				{   // Иначе выделяем только один объект
 					// Снимаем выделение у всех объектов хранилища
 					remove_selection_circle(ref storag);
-					paint_figure(Color.Red, 4, c);
+					paint_figure(Color.Red, 4, ref storag, c);
 					tree.treeSelect(ref treeView1, c);
 				}
 				return;
@@ -784,7 +688,7 @@ namespace _8_laba_OOP
 			// Снимаем выделение у всех объектов хранилища
 			remove_selection_circle(ref storag);
 			storag.objects[indexin].fillcolor = colorDialog1.Color;
-			paint_figure(Color.Red, 4, indexin);
+			paint_figure(Color.Red, 4, ref storag, indexin);
 			++index;
 			p = 0;
 		}
@@ -794,7 +698,7 @@ namespace _8_laba_OOP
 			{
 				if (!stg.check_empty(i))
 				{   // Вызываем функцию отрисовки круга
-					paint_figure(Color.Navy, 4, i);
+					paint_figure(Color.Navy, 4, ref storag, i);
 				}
 			}
 		}
@@ -807,7 +711,6 @@ namespace _8_laba_OOP
 					if (stg.objects[i].color == Color.Red)
 					{   // Если объект выделен
 						stg.objects[i].move_y(y, panel_drawing);
-						stg.NotifyObservers();
 					}
 				}
 			}
@@ -821,7 +724,6 @@ namespace _8_laba_OOP
 					if (stg.objects[i].color == Color.Red)
 					{   // Если объект выделен
 						stg.objects[i].move_x(x, panel_drawing);
-						stg.NotifyObservers();
 					}
 				}
 			}
@@ -861,21 +763,21 @@ namespace _8_laba_OOP
 			}
 			panel_drawing.Refresh();
 		}		
-		private void paint_figure(Color name, int size, int index)
+		private void paint_figure(Color name, int size, ref Storage stg, int index)
 		{   // Рисует фигуру на панели          
 			// Объявляем объект - карандаш, которым будем рисовать контур
-			if (!storag.check_empty(index))
+			if (!stg.check_empty(index))
 			{
 				Pen pen = new Pen(name, size);
-				storag.objects[index].color = name;
-				storag.objects[index].paint_figure(pen, panel_drawing);
+				stg.objects[index].color = name;
+				stg.objects[index].paint_figure(pen, panel_drawing);
 			}
 		}
 		private void paint_all(ref Storage stg)
 		{   // Рисует все фигуры на панели
 			for (int i = 0; i < k; ++i)
 				if (!stg.check_empty(i))
-					paint_figure(stg.objects[i].color, 4, i);
+					paint_figure(stg.objects[i].color, 4, ref storag, i);
 		}
 		private int check_figure(ref Storage stg, int size, int x, int y)
 		{   // Проверяет есть ли уже фигура с такими же координатами в хранилище
@@ -960,7 +862,7 @@ namespace _8_laba_OOP
 					if (storag.objects[i].color == Color.Red)
 					{
 						storag.objects[i].setcolor(colorDialog1.Color);
-						paint_figure(storag.objects[i].color, 4, i);
+						paint_figure(storag.objects[i].color, 4, ref storag, i);
 					}
 			}
 		}
@@ -1025,37 +927,32 @@ namespace _8_laba_OOP
 				sr.Close();
 			}
 		}
-		private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
-		{	// Выделение фигур из treeView
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {	// Выделение фигур из treeView
 			remove_selection_circle(ref storag);
-			int g;
-			if (e.Node.Level != 1)
-				g = e.Node.Parent.Index;
-			else
-				g = e.Node.Index;
-			paint_figure(Color.Red, 4, g);
-		}
+            int g;
+            if (e.Node.Level != 1)
+                g = e.Node.Parent.Index;
+            else
+                g = e.Node.Index;
+            paint_figure(Color.Red, 4, ref storag, g);
+        }
 
-		private void btn_sticky_Click(object sender, EventArgs e)
-		{
+        private void btn_sticky_Click(object sender, EventArgs e)
+        {
 			Sticky sticky_observ = new Sticky();
 			storag.AddObserver(sticky_observ);
 			for (int i = 0; i < k; ++i)
-			{
+            {
 				if (!storag.check_empty(i))
 				{
-					if(storag.objects[i].is_sticky == true)
-					{
-						storag.objects[i].is_sticky = false;
-						break;
-					}
 					if(storag.objects[i].color == Color.Red)
-					{
+                    {
 						storag.objects[i].is_sticky = true;
 						break;
-					}
+                    }
 				}
 			}
-		}
-	}
+        }
+    }
 }

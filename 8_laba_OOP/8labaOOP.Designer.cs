@@ -48,6 +48,8 @@
             this.btn_save = new System.Windows.Forms.Button();
             this.btn_load = new System.Windows.Forms.Button();
             this.treeView1 = new System.Windows.Forms.TreeView();
+            this.btn_sticky = new System.Windows.Forms.Button();
+            this.panel_drawing.SuspendLayout();
             this.menu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -58,6 +60,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel_drawing.BackColor = System.Drawing.SystemColors.Info;
             this.panel_drawing.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel_drawing.Controls.Add(this.btn_sticky);
             this.panel_drawing.Location = new System.Drawing.Point(12, 12);
             this.panel_drawing.Name = "panel_drawing";
             this.panel_drawing.Size = new System.Drawing.Size(626, 539);
@@ -250,6 +253,18 @@
             this.treeView1.TabIndex = 7;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
+            // btn_sticky
+            // 
+            this.btn_sticky.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_sticky.BackColor = System.Drawing.Color.Transparent;
+            this.btn_sticky.Location = new System.Drawing.Point(491, 12);
+            this.btn_sticky.Name = "btn_sticky";
+            this.btn_sticky.Size = new System.Drawing.Size(130, 62);
+            this.btn_sticky.TabIndex = 4;
+            this.btn_sticky.Text = "Липкий";
+            this.btn_sticky.UseVisualStyleBackColor = false;
+            this.btn_sticky.Click += new System.EventHandler(this.btn_sticky_Click);
+            // 
             // laba8
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -269,6 +284,7 @@
             this.Text = "8 Laba OOP";
             this.TopMost = true;
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.laba8_KeyDown);
+            this.panel_drawing.ResumeLayout(false);
             this.menu.ResumeLayout(false);
             this.menu.PerformLayout();
             this.ResumeLayout(false);
@@ -295,6 +311,7 @@
         private System.Windows.Forms.Button btn_load;
         private System.Windows.Forms.ToolStripButton Clear;
         private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.Button btn_sticky;
     }
 }
 
