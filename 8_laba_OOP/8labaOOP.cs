@@ -21,8 +21,7 @@ namespace _8_laba_OOP
 
 		public class Figure
 		{   // Composite
-			public int x, y, rad, lenght,size;
-			public int min_x = 99999, max_x = 0, min_y = 99999, max_y = 0;
+			public int x, y, rad, lenght,size;			
 			public Color color = Color.Navy;
 			public Color fillcolor;
 			public bool is_sticky = false;
@@ -52,6 +51,7 @@ namespace _8_laba_OOP
 			public int maxcount = 10;
 			public Figure[] group;
 			public int count;
+			public int min_x = 99999, max_x = 0, min_y = 99999, max_y = 0;
 			public Group()
 			{   // Выделяем maxcount мест в хранилище
 				count = 0;
@@ -85,6 +85,7 @@ namespace _8_laba_OOP
 			public override void UnGroup(ref Storage stg, int c)
 			{   // Разгруппировка
 				stg.delete_object(c);
+				stg.sorting(k);
 				for (int i = 0; i < count; ++i)
 				{
 					stg.add_object(index, ref group[i], k, ref indexin);
@@ -191,7 +192,7 @@ namespace _8_laba_OOP
 				this.color = color;
 			}
 		}
-		class Circle : Figure
+		class Circle  : Figure
 		{
 			//public int rad; // Радиус круга
 			public Circle() { }
@@ -460,7 +461,6 @@ namespace _8_laba_OOP
 				}
 			}
 		}
-
 		static public void check(int f, int chislo, int gran, int gran1, ref int x)
 		{   // Проверка на выход фигуры за границы
 			if (f > 0 && f < gran)
@@ -653,7 +653,6 @@ namespace _8_laba_OOP
 					return true;
 				else return false;
 			}
-
 			public bool FigureCheck(Storage stg, int i, int j, string b, int d)
 			{
 				string h;
@@ -680,10 +679,10 @@ namespace _8_laba_OOP
 							break;
 						case "Group":
 							(stg.objects[j] as Group).getsize();
-							if (stg.objects[i].x <= stg.objects[j].max_x && (stg.objects[i].x + (stg.objects[i].rad * 2)) >=
-							stg.objects[j].min_x  &&
-								stg.objects[i].y <= stg.objects[j].max_y && 
-								(stg.objects[i].y + (stg.objects[i].rad * 2)) >= stg.objects[j].min_y)
+							if (stg.objects[i].x <= (stg.objects[j] as Group).max_x && (stg.objects[i].x + (stg.objects[i].rad * 2)) >=
+							(stg.objects[j] as Group).min_x  &&
+								stg.objects[i].y <= (stg.objects[j] as Group).max_y && 
+								(stg.objects[i].y + (stg.objects[i].rad * 2)) >= (stg.objects[j] as Group).min_y)
 								return true;						
 							break;					
 				}
@@ -832,10 +831,9 @@ namespace _8_laba_OOP
 				if (!stg.check_empty(i))
 				{
 					if (stg.objects[i].color == Color.Red)
-					{
-
-						
+					{						
 						stg.delete_object(i);
+						stg.sorting(k);
 					}
 				}
 			}
@@ -849,6 +847,7 @@ namespace _8_laba_OOP
 					if (!storag.check_empty(i))
 					{						
 						storag.delete_object(i);
+						//storag.sorting(k);
 					}
 				}
 			}
