@@ -22,6 +22,7 @@ namespace _8_laba_OOP
 		public class Figure
 		{   // Composite
 			public int x, y, rad, lenght,size;
+			public int min_x = 99999, max_x = 0, min_y = 99999, max_y = 0;
 			public Color color = Color.Navy;
 			public Color fillcolor;
 			public bool is_sticky = false;
@@ -51,7 +52,6 @@ namespace _8_laba_OOP
 			public int maxcount = 10;
 			public Figure[] group;
 			public int count;
-			int min_x = 99999, max_x = 0, min_y = 99999, max_y = 0;
 			public Group()
 			{   // Выделяем maxcount мест в хранилище
 				count = 0;
@@ -182,7 +182,14 @@ namespace _8_laba_OOP
 			{
 				return "Group";
 			}
-
+			public override void setcolored(Color color)
+			{
+				for(int i = 0; i < count; ++i)
+                {
+					group[i].color = color;
+                }
+				this.color = color;
+			}
 		}
 		class Circle : Figure
 		{
@@ -587,7 +594,7 @@ namespace _8_laba_OOP
 		{
 			public TreeViews() { }
 			public void Update(ref TreeView treeView, Storage stg)
-			{	// Перерисовка treeView
+			{   // Перерисовка treeView
 				treeView.Nodes.Clear();
 				treeView.Nodes.Add("Фигуры");
 				for(int i = 0; i < k; ++i)
@@ -629,7 +636,7 @@ namespace _8_laba_OOP
 				else return false;
 			}
 			public bool checkLine(Storage stg, int i, int j)
-            {
+			{
 				if (stg.objects[i].x + stg.objects[i].lenght >= stg.objects[j].x - stg.objects[j].lenght
 					&& stg.objects[i].x - stg.objects[i].lenght <= stg.objects[j].x + stg.objects[j].lenght
 					&& stg.objects[i].y >= stg.objects[j].y - 10
@@ -648,12 +655,12 @@ namespace _8_laba_OOP
 			}
 
 			public bool FigureCheck(Storage stg, int i, int j, string b, int d)
-            {
+			{
 				string h;
 				if(d == 1)
-                {
+				{
 					h = b;
-                }
+				}
 				else h = stg.objects[j].name();			
 					switch (h)
 					{
@@ -672,33 +679,13 @@ namespace _8_laba_OOP
 								return true;
 							break;
 						case "Group":
-							for (int v = 0; v < (stg.objects[j] as Group).count; ++v)
-                            {
-								string l = (stg.objects[j] as Group).name();
-								if (FigureCheck(stg, i, v, l, 1))
-									return true;
-							}
-							break;
-						case null:
-							return false;
-
-
-							//case "<>":
-							//	for (int i = 0; i < (storageObj as GroupFigures).count; i++)
-							//	{
-							//		string name1 = (storageObj as GroupFigures).group[i].save();
-							//		name1 = name1.Remove(name1.IndexOf('\n'), name1.Length - name1.IndexOf('\n'));
-
-							//		if (FigureCheck(obj, (storageObj as GroupFigures).group[i], name1))
-							//		{
-							//			storageCopy.getobj().setColor(Color.Orange);
-							//			return true;
-							//		}
-							//		else
-							//			return false;
-							//	}
-							//	break;
-					
+							(stg.objects[j] as Group).getsize();
+							if (stg.objects[i].x <= stg.objects[j].max_x && (stg.objects[i].x + (stg.objects[i].rad * 2)) >=
+							stg.objects[j].min_x  &&
+								stg.objects[i].y <= stg.objects[j].max_y && 
+								(stg.objects[i].y + (stg.objects[i].rad * 2)) >= stg.objects[j].min_y)
+								return true;						
+							break;					
 				}
 				return false;
 				
@@ -733,7 +720,6 @@ namespace _8_laba_OOP
 					}
 				}
 			}
-
 		}
 
 		private void panel_drawing_MouseClick(object sender, MouseEventArgs e)
@@ -846,17 +832,24 @@ namespace _8_laba_OOP
 				if (!stg.check_empty(i))
 				{
 					if (stg.objects[i].color == Color.Red)
+					{
+
+						
 						stg.delete_object(i);
+					}
 				}
 			}
 		}
 		private void Clear_Click(object sender, EventArgs e)
 		{   // Очистка хранилища и панели
-			for (int i = 0; i < k; ++i)
+			while (storag.occupied(k) != 0)
 			{
-				if (!storag.check_empty(i))
+				for (int i = 0; i < k; ++i)
 				{
-					storag.delete_object(i);
+					if (!storag.check_empty(i))
+					{						
+						storag.delete_object(i);
+					}
 				}
 			}
 			panel_drawing.Refresh();
@@ -1035,7 +1028,6 @@ namespace _8_laba_OOP
 				g = e.Node.Index;
 			paint_figure(Color.Red, 4, g);
 		}
-
 		private void btn_sticky_Click(object sender, EventArgs e)
 		{
 			Sticky sticky_observ = new Sticky();
